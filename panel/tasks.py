@@ -105,5 +105,23 @@ def send_mailing(mailing_id: int):
 
 
 @shared_task
-def example_task():
-    print("Пример периодической задачи")
+def delete_message(user_id, message_id):
+    url = f"https://api.telegram.org/bot{config.BOT_TOKEN}/deleteMessage"
+
+    payload = {
+        'chat_id': user_id,
+        'message_id': message_id
+    }
+
+    try:
+        response = requests.post(url, json=payload)
+        response.raise_for_status()  
+        
+        result = response.json()
+        if result.get('ok'):
+            print("Сообщение успешно удалено через POST-запрос!")
+        else:
+            print(f"Ошибка от Telegram: {result.get('description')}")
+
+    except requests.exceptions.RequestException as e:
+        print(f"Ошибка HTTP-запроса: {e}")

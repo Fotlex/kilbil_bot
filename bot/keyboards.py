@@ -21,7 +21,7 @@ def get_menu_keyboard():
         [KeyboardButton(text='Мой баланс')],
         [KeyboardButton(text='История покупок')],
         [KeyboardButton(text='Техническая поддержка')],
-    ])
+    ], resize_keyboard=True)
     
     
 def get_support_keyboard(url):

@@ -1,4 +1,4 @@
-from aiogram.types import Message, CallbackQuery, Contact
+from aiogram.types import Message, CallbackQuery, Contact, BufferedInputFile
 from aiogram import Router, F
 from aiogram.filters import CommandStart
 from aiogram.fsm.context import FSMContext
@@ -6,7 +6,7 @@ from aiogram.fsm.context import FSMContext
 from bot.texts import *
 from bot.keyboards import *
 from bot.states import DateState
-from panel.models import User
+from panel.models import User, UserCode
 from bot.kilbil_api import *
 from bot.utils import *
 from panel.models import SupportHelp
@@ -202,14 +202,35 @@ async def support(message: Message):
     
 @router.message(F.text == 'Виртуальная карта')
 async def wallet(message: Message, user: User):
-    response = await get_wallet_card(user.api_id)
-    print(response)
-    
-    if response and response.get("result_code") == 0:
-        await message.answer(f'{response.get("wallet_link")}')
-        return
-    
-    await message.answer('Что-то пошло не так, попробуйте снова позже')
+    wait_message = await message.answer("Одну минуту, генерирую ваш QR-код...")
+
+    try:
+        response = await get_wallet_card(user.api_id)
+        
+        if response and "confirmation_code" in response:
+            code = str(response.get("confirmation_code"))
+            
+            qr_image_bytes = generate_qr_in_memory(code)
+
+            input_file = BufferedInputFile(qr_image_bytes, filename="qr_code.png")
+
+            qr_message = await message.answer_photo(
+                photo=input_file,
+                caption="Ваш QR-код готов! Через 5 минут он исчезнет."
+            )
+            
+            await UserCode.objects.acreate(
+                user_id=user.id,
+                qr_message_id=qr_message.message_id,
+            )
+        else:
+            await message.answer('Не удалось получить код. Попробуйте снова позже.')
+        
+        await wait_message.delete()
+        
+    except Exception as e:
+        print(f"Ошибка при генерации QR: {e}")
+        await message.answer('Что-то пошло не так, попробуйте снова позже.')
         
     
     

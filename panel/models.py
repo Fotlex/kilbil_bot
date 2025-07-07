@@ -74,3 +74,9 @@ class SupportHelp(models.Model):
     class Meta:
         verbose_name = 'Техническая поддержка'
         verbose_name_plural = 'Техническая поддержка'
+
+
+
+class UserCode(models.Model):
+    user_id = models.BigIntegerField(null=True, blank=True)
+    qr_message_id = models.IntegerField(null=True, blank=True)

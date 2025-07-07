@@ -17,7 +17,7 @@ class Config(BaseSettings):
 
     REDIS_HOST: str
     REDIS_PORT: str
-
+    
     KILBIL_URL: str
     API_KEY: str
     

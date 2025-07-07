@@ -1,4 +1,8 @@
 import re
+import base64
+import qrcode
+import io
+
 from datetime import datetime
 
 
@@ -29,7 +33,6 @@ def is_valid_date(date_str: str) -> bool:
     
     
 
-# ... (другие импорты и код роутера) ...
 
 def format_history_message(operations_list: list) -> str:
     if not operations_list:
@@ -72,3 +75,11 @@ def format_history_message(operations_list: list) -> str:
         message_lines.append(entry_text)
 
     return "\n\n".join(message_lines)
+
+
+def generate_qr_in_memory(data: str) -> bytes:
+    img_byte_arr = io.BytesIO()
+    img = qrcode.make(data)
+    img.save(img_byte_arr, format='PNG')
+    img_byte_arr = img_byte_arr.getvalue()
+    return img_byte_arr

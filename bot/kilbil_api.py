@@ -61,13 +61,14 @@ async def get_operation_history(client_id):
             print(f'При запросе операций клиента возникла ошибка - {e}')
             
             
-async def get_wallet_card(client_id):
+async def get_wallet_card(client_id, outer_systems_interface_type = 5):
     async with aiohttp.ClientSession() as session:
         payload = {
             "client_id": client_id,
+            "outer_systems_interface_type": outer_systems_interface_type,
         }
         try:
-            async with session.post(f"{config.KILBIL_URL}/load/getwalletlink?h={config.API_KEY}", json=payload) as response:
+            async with session.post(f"{config.KILBIL_URL}/load/getconfirmationcode?h={config.API_KEY}", json=payload) as response:
                 response.raise_for_status() 
                 return await response.json()
         except Exception as e:
