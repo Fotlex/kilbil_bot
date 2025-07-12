@@ -73,3 +73,4 @@ async def get_wallet_card(client_id, outer_systems_interface_type = 5):
                 return await response.json()
         except Exception as e:
             print(f'При запросе карты клиента возникла ошибка - {e}')
+            
